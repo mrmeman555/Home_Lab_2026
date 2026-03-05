@@ -1,27 +1,16 @@
 # Sec+ Analysis — Recap
 
-Review notes and material references for the current Sec+ (Security+) analysis project.
+## Original five (Net+ RoadmapAnalysis)
 
----
+Methodology blueprints from the Net+ Phase 1 Roadmapping — use as reference for Sec+ analysis where applicable:
 
-## Materials in this folder
-
-- **CompTIA-Security-Plus-SY0-701-Exam-Objectives.pdf** — Official exam objectives (SY0-701)
-
----
-
-## Quick recap (fill as you go)
-
-- **Project focus:**  
-- **Key domains / objectives:**  
-- **Decisions / conventions:**  
-- **Next steps:**  
-
----
-
-## References & links
-
-*(Add links to external docs, study guides, or related repo paths.)*
+| # | File | Role |
+|---|------|------|
+| 1 | [00_Concept_Inventory.md](../net+Analysis/Sprint_NetPlus/Phase_1_Roadmapping/RoadmapAnalysis/Strategic_Blueprints/00_Concept_Inventory.md) | Schema / master index of methodologies, theories, tactics |
+| 2 | [01_Protocol_The_Verb_Cipher.md](../net+Analysis/Sprint_NetPlus/Phase_1_Roadmapping/RoadmapAnalysis/Strategic_Blueprints/01_Protocol_The_Verb_Cipher.md) | Depth rule: verb → cognitive level (flashcards / labs / break-fix) |
+| 3 | [Objective_Architecture_Brainstorming.md](../net+Analysis/Sprint_NetPlus/Phase_1_Roadmapping/RoadmapAnalysis/Strategic_Blueprints/Objective_Architecture_Brainstorming.md) | Domain logic, skill trees, "Three Trees," 3D coordinates |
+| 4 | [Brainstorming_Analysis_Strategy.md](../net+Analysis/Sprint_NetPlus/Phase_1_Roadmapping/RoadmapAnalysis/Strategic_Blueprints/Brainstorming_Analysis_Strategy.md) | Objective mapping workbench, faceted matrices, 3D schema |
+| 5 | [System_Integration_Brainstorm.md](../net+Analysis/Sprint_NetPlus/Phase_1_Roadmapping/RoadmapAnalysis/Strategic_Blueprints/System_Integration_Brainstorm.md) | Execution bridge: pipeline, outputs, decisions, next actions |
 
 ---
 
