@@ -76,27 +76,18 @@ Sec+ equivalent: `SecPlus-Cognitive-Protocol/` repo following same structure.
 | Item                                     | Location                                                                                       | Status                                          |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | **Official Exam Objectives (SY0-701)**   | `./CompTIA-Security-Plus-SY0-701-Exam-Objectives.pdf`                                          | ✅ Have                                          |
-| **Textbook with Appendix A mapping**     | TBD                                                                                            | ❌ **CRITICAL — see note below**                 |
+| **Textbook with Appendix A mapping**     | Cengage — *CompTIA Security+ Guide to Network Security Fundamentals, 8th Ed.* (MindTap) | ✅ **FOUND** — Appendix A has Module/Section/Bloom's per sub-item |
 | **CTT+ Reference**                       | `../net+Analysis/Sprint_NetPlus/Phase_1_Roadmapping/Materials/CTT/CTT_Reference_Materials.pdf` | ✅ Same file — Bloom's Taxonomy is cert-agnostic |
 | **Practice Exam / Question Bank**        | TBD                                                                                            | ❌ Need — equivalent to Appendix C               |
 | **Supplemental Materials (Packt, etc.)** | TBD                                                                                            | ❌ Need                                          |
 
-### ⚠️ CRITICAL: The Appendix A Problem
+### ✅ RESOLVED: The Appendix A Problem
 
-The Net+ analysis was built on top of the **Cengage Appendix A** (`Appendix_A_Exam_Objectives.pdf`), which provided a single document mapping every objective to three things:
+The Cengage *CompTIA Security+ Guide to Network Security Fundamentals, 8th Ed.* contains an Appendix A with the exact format we needed: every objective sub-item mapped to Module → Section → Bloom's Taxonomy label. Same publisher, same format as the Net+ Appendix A.
 
-1. **Full objective text with sub-items** — the complete scope of what's tested
-2. **Textbook section cross-references** — exact chapter/section for each objective (needed for Trap Lab Filter and Void Check)
-3. **Explicit Bloom's Taxonomy labels** — "Understand", "Apply", "Analyze" confirmed by the publisher, not inferred from the verb
+**Critical finding:** The Bloom's levels vary **per sub-item within a single objective**, not one level per objective. Objectives with "Explain" verbs are routinely classified at Applying, Analyzing, and even Evaluating/Creating depth. The verb-only Verb Cipher classification significantly underestimates the required depth for Sec+. The mapping workbench (`SY0-701_Objective_Mapping.md`) needs to be updated with confirmed Cengage data.
 
-This was the foundational input for the entire Verb Cipher analysis. Without it, the Verb Cipher still works (we can infer from the command verb), but we lose the textbook cross-references needed for the Trap Lab Filter and Void Check workflows, and we lose the independent Bloom's validation.
-
-**What we need:** A Sec+ SY0-701 textbook that has an equivalent appendix — objectives mapped to sections mapped to Bloom's labels. Best candidates:
-- **Cengage** (same publisher as Net+ book — most likely to use identical appendix format)
-- **Pearson / CompTIA CertMaster**
-- **Sybex (Wiley)**
-
-**This is a blocking dependency for Phase 1.2.** We can start the Verb Cipher classification from the official objectives PDF alone, but the Trap Lab Filter, Void Check, and Faceted Matrix workflows all require textbook section cross-references.
+**This unblocks Phase 1.2.** Trap Lab Filter, Void Check, and Faceted Matrix workflows can now proceed.
 
 
 ---
