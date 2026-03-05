@@ -133,7 +133,27 @@ Net+ used Lens × Tool × Method. For Sec+:
 - **Axis 2 (Tool/Control):** Which security control or tool applies? (Maps to 2.5 mitigations, 4.4/4.5 monitoring tools, etc.)
 - **Axis 3 (Lifecycle):** Where in the security lifecycle? Could map to incident response phases (Prep → Detect → Analyze → Contain → Eradicate → Recover → Lessons Learned) from 4.8
 
-### Q4: What entities get Faceted Matrix treatment?
+### Q4: How does the Tool Mapping work without a single "5.5" wrapper?
+Net+ had Objective 5.5 as a dedicated "Wrapper Layer" — one objective that defined ALL the tools, which then got bound to every other objective via the 3D Mapping Table's "Primary Tool" and "Verification Tool" columns. The MetaPrompt's "Toolchain Mapper" persona enforced specificity (e.g., not "Wireshark" but `Wireshark — filter: bootp for DHCP lease analysis`).
+
+**Sec+ has no single tool wrapper.** Tools are distributed across multiple objectives:
+
+| Objective | Tool Category | Examples |
+|-----------|--------------|---------|
+| **4.4** | Monitoring & alerting tools | SIEM, SCAP, benchmarks, agents/agentless, antivirus, DLP, SNMP traps, NetFlow, vulnerability scanners |
+| **4.5** | Security infrastructure controls | Firewall (rules, ACLs, ports, screened subnets), IDS/IPS (trends, signatures), web filter, DNS filtering, email security (DMARC/DKIM/SPF), EDR/XDR, NAC, file integrity monitoring, DLP |
+| **2.5** | Hardening/mitigation tools | Endpoint protection, HIPS, host-based firewall, ACLs, application allow list |
+| **4.9** | Investigation data sources | Firewall logs, application logs, endpoint logs, OS security logs, IPS/IDS logs, network logs, metadata, vulnerability scans, packet captures, dashboards |
+| **Page 21** | Hardware & Software List | Kali Linux, packet capture software, pen testing software, static/dynamic analysis tools, vulnerability scanner, SIEM, keyloggers, MDM, VPN, network mapper, Wi-Fi analyzer |
+
+**Working hypothesis:** Instead of one Tool axis, we build a **distributed tool layer** — objectives 4.4 + 4.5 + 4.9 collectively form the "toolbar." Each Sec+ objective still gets a "Primary Tool" and "Verification Tool" binding, but those tools trace back to multiple source objectives instead of a single 5.5. The Toolchain Mapper persona still works; it just references the combined tool pool.
+
+**Alternative hypothesis:** Maybe the Sec+ "wrapper layers" aren't Tool + Method like Net+. Maybe they're:
+- **4.8 (Incident Response Process)** as the Method wrapper — Prep → Detect → Analyze → Contain → Eradicate → Recover → Lessons Learned (analogous to Net+'s 5.1 troubleshooting methodology)
+- **4.4 + 4.5 + 4.9 (combined)** as the Tool wrapper — the distributed toolkit
+- **2.5 (Mitigation Techniques)** as a Controls wrapper — the countermeasures
+
+### Q5: What entities get Faceted Matrix treatment?
 Net+ used entities like "Router" and "Switch" studied through multiple lenses. Sec+ equivalents might be: Firewall (across architecture, operations, hardening), Encryption (across crypto concepts, data protection, implementation), Identity/Access (across AAA, IAM, privileged access), Incident (across detection, response, forensics).
 
 ---
