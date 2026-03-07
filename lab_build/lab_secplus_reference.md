@@ -46,7 +46,7 @@ Relevant sub-items:
 - **Network attacks** — DDoS simulation (hping3), on-path (ARP spoofing from Kali), DNS attacks
 - **Application attacks** — brute force SSH, injection attempts against Apache
 - **Password attacks** — spraying, brute force against SSH/RDP
-- **Indicators** — account lockout (auth.log), blocked content (pfSense firewall logs), resource consumption (top/htop during DDoS sim), missing logs (log tampering exercise)
+- **Indicators** — account lockout (auth.log), blocked content (router iptables logs), resource consumption (top/htop during DDoS sim), missing logs (log tampering exercise)
 
 *Lab touch: PRIMARY GAP FILLER. Cengage has no indicator analysis lab. Stage attacks from Kali → generate real indicators → analyze in logs. This is Analyzing-tier.*
 
@@ -54,12 +54,12 @@ Relevant sub-items:
 
 Relevant sub-items:
 - **Segmentation** — why we split into three VLANs (blast radius reduction from 100% to ~33%)
-- **Access control** (ACL, permissions) — pfSense firewall rules, file permissions on Ubuntu/Windows
+- **Access control** (ACL, permissions) — router iptables rules, file permissions on Ubuntu/Windows
 - **Application allow list** — what services are permitted per zone
 - **Isolation** — attack network isolated from corporate; production air-gapped from lab
 - **Patching** — keeping lab VMs updated
 - **Encryption** — SSH, TLS for web, potential VPN between zones
-- **Monitoring** — log collection across zones (pfSense, syslog, Event Viewer)
+- **Monitoring** — log collection across zones (router iptables logs, syslog, container logs)
 - **Least privilege** — default deny, only open what's needed
 - **Configuration enforcement** — baseline configs documented and enforced
 - **Hardening techniques**: host-based firewall (iptables, Windows Firewall), disabling ports/protocols, default password changes, removal of unnecessary software
@@ -72,16 +72,16 @@ Relevant sub-items:
 - **Network infrastructure**: Physical isolation (air gap from production), logical segmentation (VLANs 50/51/52), SDN (Proxmox virtual switches)
 - **On-premises** — the lab is entirely on-prem on Proxmox
 - **Virtualization** — the lab runs on Proxmox VMs; VM escape is a discussion point
-- **Considerations**: Availability (service placement), Resilience (snapshots), Cost (RAM constraints drove VM sizing), Compute (16GB shared with production), Ease of deployment (Proxmox templates), Patch availability (Ubuntu LTS, pfSense CE updates)
+- **Considerations**: Availability (service placement), Resilience (snapshots), Cost (RAM constraints drove Docker pivot), Compute (lightweight — containers share host kernel), Ease of deployment (Docker Compose), Patch availability (Ubuntu LTS, container image updates)
 
 *Lab touch: Zone architecture design directly exercises this. "Why three zones?" is a 3.1 question.*
 
 ## 3.2 — Securing Enterprise Infrastructure (18%) ← HEAVIEST LAB MATCH
 
 Relevant sub-items:
-- **Infrastructure considerations**: Device placement (pfSense between zones), Security zones (Corporate/DMZ/Attack), Attack surface (what's exposed per zone), Connectivity (inter-zone routing only through firewall), Failure modes (fail-open = all traffic passes, fail-closed = all traffic blocked — default-deny is fail-closed)
+- **Infrastructure considerations**: Device placement (router container between zones), Security zones (Corporate/DMZ/Attack), Attack surface (what's exposed per zone), Connectivity (inter-zone routing only through firewall), Failure modes (fail-open = all traffic passes, fail-closed = all traffic blocked — default-deny is fail-closed)
 - **Device attributes**: Active (firewall actively filters) vs passive (IDS in tap mode), Inline (firewall in traffic path) vs tap/monitor (span port for IDS)
-- **Network appliances**: Jump server (could add one in DMZ), Proxy server, IPS/IDS (Suricata on pfSense), Load balancer, Sensors
+- **Network appliances**: Jump server (could add one in DMZ), Proxy server, IPS/IDS (Suricata as additional container (stretch goal)), Load balancer, Sensors
 - **Port security**: 802.1X, EAP — conceptual (not implemented in virtual lab)
 - **Firewall types**: WAF (ModSecurity on Apache), UTM, NGFW, Layer 4 (port-based rules) / Layer 7 (application-aware rules)
 - **Secure communications**: VPN (site-to-site between zones), Remote access, Tunneling (TLS, IPSec), SD-WAN, SASE
@@ -93,7 +93,7 @@ Relevant sub-items:
 
 Relevant sub-items:
 - **Secure baselines**: Establish (document default config), Deploy (apply hardened config), Maintain (verify config hasn't drifted)
-- **Hardening targets**: Workstations (Win11 — Windows Firewall, Group Policy, disable unnecessary services), Routers (pfSense — change default password, disable unused interfaces, SSH-only management), Servers (Ubuntu — iptables, disable services, SSH key auth, remove unnecessary packages)
+- **Hardening targets**: Routers (router container — iptables rule management, reviewing default policies), Servers (Ubuntu — iptables, disable services, SSH key auth, remove unnecessary packages)
 - **Application security**: Input validation (Apache config), Secure cookies (web server hardening)
 - **Monitoring** — log review after every exercise
 
@@ -112,10 +112,10 @@ Relevant sub-items:
 ## 4.4 — Security Alerting and Monitoring (28%)
 
 Relevant sub-items:
-- **Monitoring computing resources**: Systems (Win11 Event Viewer), Applications (Apache access.log, auth.log), Infrastructure (pfSense dashboard, interface stats)
-- **Activities**: Log aggregation (syslog forwarding to central point), Alerting (pfSense notifications), Scanning (scheduled Nmap scans), Reporting, Archiving
+- **Monitoring computing resources**: Systems (container logs), Applications (Apache access.log, auth.log), Infrastructure (router container, interface stats)
+- **Activities**: Log aggregation (syslog forwarding to central point), Alerting (iptables LOG alerts), Scanning (scheduled Nmap scans), Reporting, Archiving
 - **Alert response/remediation**: Quarantine (block attacker IP with firewall rule), Alert tuning (reduce false positives in IDS rules)
-- **Tools**: Benchmarks (CIS benchmarks for hardening), Agents/agentless, SNMP traps (pfSense SNMP), NetFlow (pfSense export), Vulnerability scanners (GVM)
+- **Tools**: Benchmarks (CIS benchmarks for hardening), Agents/agentless, SNMP traps (container monitoring), NetFlow (iptables logging), Vulnerability scanners (GVM)
 
 *Lab touch: Every attack exercise generates monitoring data. Log analysis is a confirmed PBQ topic.*
 
@@ -123,11 +123,11 @@ Relevant sub-items:
 
 Relevant sub-items:
 - **Firewall**: Rules, Access lists, Ports/protocols, Screened subnets (DMZ = screened subnet)
-- **IDS/IPS**: Trends, Signatures — Suricata on pfSense
-- **Web filter**: Agent-based, Centralized proxy, URL scanning, Content categorization, Block rules, Reputation — pfSense packages (pfBlockerNG)
+- **IDS/IPS**: Trends, Signatures — Suricata as additional container (stretch goal)
+- **Web filter**: Agent-based, Centralized proxy, URL scanning, Content categorization, Block rules, Reputation — iptables rules or bind9 config
 - **Operating system security**: Group Policy (Win11), SELinux/iptables (Ubuntu)
 - **Implementation of secure protocols**: Protocol selection (SSH not Telnet, HTTPS not HTTP), Port selection, Transport method
-- **DNS filtering** — pfSense DNS resolver + pfBlockerNG, or bind9 on Ubuntu
+- **DNS filtering** — iptables DNS filtering rules + bind9 on Ubuntu
 - **Email security**: DMARC, DKIM, SPF, Gateway — outside lab scope unless mail server added
 - **File integrity monitoring** — AIDE or tripwire on Ubuntu
 - **DLP, NAC, EDR/XDR** — conceptual discussion, not implemented
@@ -160,8 +160,8 @@ Relevant sub-items:
 ## 4.9 — Data Sources for Investigation (28%) ← PBQ CONFIRMED
 
 Relevant sub-items:
-- **Log data**: Firewall logs (pfSense — filter log, system log), Application logs (Apache access.log, error.log), Endpoint logs (Windows Event Viewer — Security, System, Application logs), OS-specific security logs (auth.log, syslog on Ubuntu, Security log on Windows), IPS/IDS logs (Suricata alerts), Network logs (pfSense interface logs), Metadata (timestamps, source/dest IPs, ports)
-- **Data sources**: Vulnerability scans (Nmap/GVM output), Automated reports (GVM reports), Dashboards (pfSense dashboard, Proxmox monitoring), Packet captures (Wireshark from Kali or span port)
+- **Log data**: Firewall logs (router — iptables LOG with [FW-DENY] prefix, dmesg), Application logs (Apache access.log, error.log), Endpoint logs (add Windows container as stretch goal), OS-specific security logs (auth.log, syslog on Ubuntu, Security log on Windows), IPS/IDS logs (Suricata alerts), Network logs (router interface logs), Metadata (timestamps, source/dest IPs, ports)
+- **Data sources**: Vulnerability scans (Nmap/GVM output), Automated reports (GVM reports), Dashboards (router container, Proxmox monitoring), Packet captures (tcpdump from Kali or router)
 
 *Lab touch: PRIMARY GAP FILLER. Cengage covers Windows/Linux logs but NOT firewall/IPS logs. Every attack exercise in this lab generates firewall logs, application logs, and packet captures simultaneously. This is Analyzing-tier.*
 

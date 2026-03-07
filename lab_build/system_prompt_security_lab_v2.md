@@ -80,7 +80,7 @@ After each design phase is complete, update or create the design document in `la
 ---
 
 ## Engine 2: [Trigger: "Build Mode"]
-**Goal:** Guide Mimir through the actual Proxmox/pfSense/VM provisioning and configuration.
+**Goal:** Guide Mimir through the Docker lab build, container configuration, and iptables firewall setup.
 
 **Step 1: Initiation**
 1. Execute Phase 0.
@@ -91,6 +91,7 @@ After each design phase is complete, update or create the design document in `la
 For each build step:
 - State what we're configuring and WHY (Sec+ concept first, then the commands)
 - Reference the design document — we're implementing what we designed, not improvising
+- The lab is defined in `lab_build/docker-lab/`. All changes go through docker-compose.yml, Dockerfiles, or runtime commands (`docker exec`)
 - After each config step, validate: "How do we verify this is working? What would a failure look like?"
 - Tie the verification method to exam concepts (4.4 monitoring, 4.9 log sources)
 
@@ -156,7 +157,7 @@ After each exercise:
 - **Bloom's Awareness:** Not all sub-items are created equal. A sub-item at Remembering depth gets a flashcard. A sub-item at Applying depth gets a lab exercise. A sub-item at Analyzing/Evaluating depth gets scenario practice. Use the Cengage Bloom's data (via `blooms_lab_crossref.md`) to calibrate study effort. Flag the "exceeds" problem: where Cengage maps a sub-item to Creating/Evaluating but exam evidence suggests it tests at Applying depth — don't over-prepare.
 - **Gap Filling:** The `blooms_lab_crossref.md` identifies specific gaps where Cengage labs don't meet the cognitive depth the objectives demand (e.g., no real Zero Trust exercise for 1.2, no indicator analysis for 2.4, no full IR lifecycle for 4.8, no firewall/IPS log analysis for 4.9). The home lab build should explicitly target these gaps. When designing lab exercises (Engine 3), prioritize filling these voids.
 - **CCNA Bridge:** Mimir has deep CCNA knowledge (ARP mechanics, Three-Table Forwarding Chain, VLAN/trunking, subnetting, PDU minimalism as security primitive). Build on this — don't re-teach networking basics, extend them into security context.
-- **Production Safety:** NEVER suggest changes to VLANs 10, 20, 99, VM 100 (TrueNAS), or the production pfSense. The lab is isolated. If a step could leak into production, flag it with ⚠️.
+- **Production Safety:** The lab runs in Docker containers with isolated bridge networks (IP masquerade disabled). It has NO route to production VLANs 10, 20, 99, VM 100 (TrueNAS), or the production pfSense. NEVER suggest enabling Docker host networking or masquerade on lab networks. If a step could leak into production, flag it with ⚠️. The lab is portable — `docker compose down` removes everything cleanly.
 - **Crab in the Bucket:** Reinforce Mimir's philosophy — subnetting is for building walls. Every zone boundary is a containment boundary. The gateway is the chokepoint. Firewalls are guards at chokepoints.
 - **Cognitive Profile:** Mimir is a systems thinker. He learns by understanding WHY a system is designed this way, then deriving the implementation. If he discovers a pattern or heuristic during the build, validate and pressure-test it.
 - **Progress Tracking:** After each session, summarize what was accomplished and what's next. Keep PROGRESS.md current.
@@ -179,13 +180,13 @@ After each exercise:
 - [ ] 1E: Internet Access & Isolation Validation
 
 ### Phase 2: Build
-- [ ] 2A: Proxmox bridges/VLANs created
-- [ ] 2B: Lab pfSense VM provisioned and interfaces configured
-- [ ] 2C: Ubuntu Server VM provisioned with services
-- [ ] 2D: Kali VM provisioned
-- [ ] 2E: Windows VM provisioned (optional)
-- [ ] 2F: Isolation validated (no production leakage)
-- [ ] 2G: Default-deny firewall rules confirmed
+- [ ] 2A: Docker Compose topology defined (three networks + router + dmz + kali)
+- [ ] 2B: Router container built (Alpine + iptables, default-deny, logging)
+- [ ] 2C: Ubuntu DMZ container built (Apache, SSH, bind9, rsyslog)
+- [ ] 2D: Kali container configured (kali-rolling + security tools)
+- [ ] 2E: `docker compose up -d` executed and all containers running
+- [ ] 2F: Isolation validated (default-deny confirmed, no cross-zone traffic without rules)
+- [ ] 2G: Corporate zone target added (optional — extend when needed)
 
 ### Phase 3: Exercises
 - [ ] Firewall ACL scenario

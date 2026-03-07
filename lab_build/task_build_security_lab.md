@@ -136,3 +136,28 @@ Once built, this lab supports:
 - The operator's Proxmox web UI is accessible via the MGMT VLAN (192.168.x.x/VLAN 99)
 - Do NOT modify VM 100 (TrueNAS) or any production network config
 - If RAM is too tight, prioritize pfSense + Kali + Ubuntu. Windows can be added later.
+
+---
+
+## Architecture Pivot: Docker Containers (2026-03-07)
+
+The original design above targeted Proxmox VMs with pfSense. This was replaced with a Docker Compose topology for the following reasons:
+
+1. **RAM constraint** — 16GB host with TrueNAS taking 8GB left insufficient room for 8GB of lab VMs
+2. **Portability** — Docker lab runs on any machine (desktop, Proxmox VM, LXC, cloud) without infrastructure dependencies
+3. **Speed** — `docker compose up -d` vs. hours of VM provisioning. Tear down and rebuild in seconds.
+4. **No production risk** — Docker bridge networks are internal to the host. No VLANs, bridges, or routes to configure on Proxmox.
+
+**What changed:**
+- pfSense → Alpine container with iptables (same firewall concepts, different tool)
+- Proxmox VMs → Docker containers (same OS images, shared kernel)
+- Proxmox bridges/VLANs → Docker bridge networks (same segmentation, different implementation)
+- 8GB RAM requirement → ~1-2GB active memory
+
+**What didn't change:**
+- Three-zone architecture (Corporate / DMZ / Attack)
+- Default-deny firewall policy
+- Security rationale and Sec+ objective mappings
+- Exercise workflows (attack → detect → respond)
+
+**Implementation:** `lab_build/docker-lab/`
