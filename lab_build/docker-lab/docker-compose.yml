@@ -1,0 +1,133 @@
+version: "3.9"
+
+# ============================================================================
+# Security+ Lab — Docker Compose Topology
+# ============================================================================
+# Three-zone segmented network with default-deny firewall.
+# Usage:
+#   docker compose up -d          # Start the lab
+#   docker compose down           # Tear it down (clean slate)
+#   docker exec -it kali bash     # Enter the attacker
+#   docker exec -it router bash   # Manage firewall rules
+#   docker exec -it ubuntu-dmz bash  # Check logs, services
+#
+# Sec+ Mapping: 3.1 (segmentation), 3.2 (security zones), 2.5 (isolation)
+# ============================================================================
+
+services:
+
+  # --------------------------------------------------------------------------
+  # ROUTER / FIREWALL — The Chokepoint
+  # --------------------------------------------------------------------------
+  # Connected to all three zones. Runs iptables with default-deny.
+  # This is where you practice firewall ACL rules (4.5 — PBQ confirmed).
+  # Control classification: Technical Preventive (1.1)
+  # --------------------------------------------------------------------------
+  router:
+    build: ./router
+    container_name: router
+    hostname: router
+    cap_add:
+      - NET_ADMIN      # Required for iptables manipulation
+      - NET_RAW         # Required for ping, packet inspection
+    sysctls:
+      - net.ipv4.ip_forward=1                # Enable routing between zones
+      - net.ipv4.conf.all.log_martians=1     # Log spoofed packets
+    networks:
+      lab-corporate:
+        ipv4_address: 172.16.50.1
+      lab-dmz:
+        ipv4_address: 172.16.51.1
+      lab-attack:
+        ipv4_address: 172.16.52.1
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+  # --------------------------------------------------------------------------
+  # UBUNTU SERVER — DMZ Target
+  # --------------------------------------------------------------------------
+  # Runs in the DMZ zone. Apache, SSH, DNS (bind9), rsyslog.
+  # Attack target + log source for 4.9 exercises.
+  # Control classification: The services ARE the attack surface (2.2).
+  # Hardening this is a Technical Corrective control (4.1).
+  # --------------------------------------------------------------------------
+  ubuntu-dmz:
+    build: ./dmz
+    container_name: ubuntu-dmz
+    hostname: ubuntu-dmz
+    cap_add:
+      - NET_ADMIN       # Allows iptables for host-based firewall exercises
+    networks:
+      lab-dmz:
+        ipv4_address: 172.16.51.10
+    dns: 172.16.51.1
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    depends_on:
+      - router
+
+  # --------------------------------------------------------------------------
+  # KALI LINUX — Attacker
+  # --------------------------------------------------------------------------
+  # Runs in the Attack zone. Nmap, Wireshark, Metasploit, hping3, etc.
+  # This is where you generate traffic for log analysis (4.9)
+  # and practice recon/scanning (5.5).
+  # --------------------------------------------------------------------------
+  kali:
+    image: kalilinux/kali-rolling
+    container_name: kali
+    hostname: kali
+    cap_add:
+      - NET_ADMIN       # Required for ARP spoofing, raw sockets
+      - NET_RAW          # Required for Nmap, hping3, ping
+    networks:
+      lab-attack:
+        ipv4_address: 172.16.52.10
+    dns: 172.16.52.1
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    command: /bin/bash -c "apt-get update && apt-get install -y nmap hping3 netcat-traditional iputils-ping iproute2 curl dnsutils tcpdump hydra && sleep infinity"
+    depends_on:
+      - router
+
+# ============================================================================
+# NETWORKS — Three Security Zones
+# ============================================================================
+# Each network is a separate broadcast domain (like a VLAN).
+# Containers can only reach other zones through the router.
+# This is segmentation (2.5) via logical isolation (3.1).
+# ============================================================================
+
+networks:
+  lab-corporate:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.50.0/24
+          gateway: 172.16.50.1
+    driver_opts:
+      com.docker.network.bridge.name: br-corporate
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+
+  lab-dmz:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.51.0/24
+          gateway: 172.16.51.1
+    driver_opts:
+      com.docker.network.bridge.name: br-dmz
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+
+  lab-attack:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.52.0/24
+          gateway: 172.16.52.1
+    driver_opts:
+      com.docker.network.bridge.name: br-attack
+      com.docker.network.bridge.enable_ip_masquerade: "false"
